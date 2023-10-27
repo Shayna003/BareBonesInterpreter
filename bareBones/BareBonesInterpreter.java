@@ -21,6 +21,7 @@ import java.util.regex.Pattern;
  * To use output redirect with GUI, run: java bareBones.BareBonesInterpreter GUI > output.txt
  *
  * valid uses cases:
+ *
  * java bareBones.BareBonesInterpreter verbose
  *
  * java bareBones.BareBonesInterpreter verbose
@@ -33,11 +34,13 @@ import java.util.regex.Pattern;
  *
  * java bareBones.BareBonesInterpreter < input.txt > output.txt verbose
  *
- * java bareBones.BareBonesInterpreter GUI
- *
  * java bareBones.BareBonesInterpreter GUI > output.txt
  *
  * java bareBones.BareBonesInterpreter GUI > output.txt verbose
+ *
+ * tested and works with comments:
+ *
+ * java bareBones.BareBonesInterpreter GUI
  *
  * TODO: output for commandline mode is messed up
  * TODO: indent support, special highlighting, popup menu stuff, such as insert commands, auto-completion, memory use
@@ -155,6 +158,16 @@ public class BareBonesInterpreter
             //outputString.append(System.lineSeparator());
             gui.output.setText(outputString.toString());
         }
+    }
+
+    public String removeComments(String input)
+    {
+        //System.out.println("remove comments: ");
+        //System.out.println("input: " + input);
+
+        String output =  input.replaceAll("/\\*(.|[\\r\\n])*\\*/", ""); // remove all comments enclosed in /* */
+        //System.out.println("output: " + output);
+        return output;
     }
 
     StringBuilder output; // used for GUI
@@ -432,7 +445,8 @@ class GUI extends JFrame
             {
                 String str = getStringFromFile(selectFile());
                 input.setText(str);
-                interpreter.interpret(str);
+                interpreter.interpret(interpreter.removeComments(input.getText()));
+                //interpreter.interpret(str);
             }
             catch (Exception e)
             {
@@ -453,7 +467,8 @@ class GUI extends JFrame
         run.addActionListener(event ->
         {
             interpreter.outputString.delete(0, interpreter.outputString.length());
-            interpreter.interpret(input.getText());
+            //interpreter.interpret(input.getText());
+            interpreter.interpret(interpreter.removeComments(input.getText()));
         });
         controlPanel.add(run);
 
